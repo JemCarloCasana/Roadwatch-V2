@@ -29,45 +29,47 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `barangays` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL
+  `name` varchar(100) NOT NULL,
+  `latitude` DECIMAL(10, 7) NULL,
+  `longitude` DECIMAL(10, 7) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `barangays`
 --
 
-INSERT INTO `barangays` (`id`, `name`) VALUES
-(1, 'Bacayao Norte'),
-(2, 'Bacayao Sur'),
-(3, 'Barangay I (T. Bugallon)'),
-(4, 'Barangay II (Nueva)'),
-(5, 'Barangay IV (Zamora)'),
-(6, 'Bolosan'),
-(7, 'Bonuan Binloc'),
-(8, 'Bonuan Boquig'),
-(9, 'Bonuan Gueset'),
-(10, 'Calmay'),
-(11, 'Carael'),
-(12, 'Caranglaan'),
-(13, 'Herrero'),
-(14, 'Lasip Chico'),
-(15, 'Lasip Grande'),
-(16, 'Lomboy'),
-(17, 'Lucao'),
-(18, 'Malued'),
-(19, 'Mamalingling'),
-(20, 'Mangin'),
-(21, 'Mayombo'),
-(22, 'Pantal'),
-(23, 'Poblacion Oeste'),
-(24, 'Pogo Chico'),
-(25, 'Pogo Grande'),
-(26, 'Pugaro Suit'),
-(27, 'Salapingao'),
-(28, 'Salisay'),
-(29, 'Tambac'),
-(30, 'Tapuac'),
-(31, 'Tebeng');
+INSERT INTO `barangays` (`id`, `name`, `latitude`, `longitude`) VALUES
+(1, 'Bacayao Norte', 16.0321184, 120.3436590),
+(2, 'Bacayao Sur', 16.0224982, 120.3460497),
+(3, 'Barangay I (T. Bugallon)', 16.0440, 120.3364),
+(4, 'Barangay II (Nueva)', 16.0434494, 120.3366372),
+(5, 'Barangay IV (Zamora)', 16.0372683, 120.3373478),
+(6, 'Bolosan', 16.0470283, 120.3653888),
+(7, 'Bonuan Binloc', 16.1019298, 120.3797034),
+(8, 'Bonuan Boquig', 16.0774984, 120.3580251),
+(9, 'Bonuan Gueset', 16.0753807, 120.3431786),
+(10, 'Calmay', 16.0452879, 120.3255690),
+(11, 'Carael', 16.0318140, 120.3138628),
+(12, 'Caranglaan', 16.0306481, 120.3499153),
+(13, 'Herrero', 16.0439297, 120.3422628),
+(14, 'Lasip Chico', 16.0216379, 120.3402722),
+(15, 'Lasip Grande', 16.0286206, 120.3432008),
+(16, 'Lomboy', 16.0548499, 120.3248795),
+(17, 'Lucao', 16.0204862, 120.3226274),
+(18, 'Malued', 16.0292908, 120.3351235),
+(19, 'Mamalingling', 16.0534043, 120.3615684),
+(20, 'Mangin', 16.0388765, 120.3673354),
+(21, 'Mayombo', 16.0418406, 120.3463080),
+(22, 'Pantal', 16.0461741, 120.3387457),
+(23, 'Poblacion Oeste', 16.0432792, 120.3295612),
+(24, 'Pogo Chico', 16.0386432, 120.3375088),
+(25, 'Pogo Grande', 16.0325032, 120.3365188),
+(26, 'Pugaro Suit', 16.0660026, 120.3237005),
+(27, 'Salapingao', 16.0589914, 120.3217036),
+(28, 'Salisay', 16.0423396, 120.3714122),
+(29, 'Tambac', 16.0460360, 120.3563194),
+(30, 'Tapuac', 16.0362403, 120.3333255),
+(31, 'Tebeng', 16.0320226, 120.3588773);
 
 -- --------------------------------------------------------
 
@@ -107,6 +109,8 @@ CREATE TABLE `reports` (
   `hazard_type_id` int(11) NOT NULL,
   `road_name` varchar(150) NOT NULL,
   `landmark` varchar(255) NOT NULL,
+  `latitude` decimal(10,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL,
   `description` text NOT NULL,
   `status` enum('pending','verified','rejected','expired') NOT NULL DEFAULT 'pending',
   `passability` enum('passable','partially_passable','not_passable') DEFAULT NULL,
@@ -118,21 +122,8 @@ CREATE TABLE `reports` (
 
 --
 -- Dumping data for table `reports`
+-- (Intentionally empty: demo reports removed; citizens file live reports.)
 --
-
-INSERT INTO `reports` (`id`, `user_id`, `barangay_id`, `hazard_type_id`, `road_name`, `landmark`, `description`, `status`, `passability`, `rejection_reason`, `reviewed_by`, `submitted_at`, `verified_at`) VALUES
-(1, 2, 1, 1, 'Test Road', 'Near Test Landmark', 'This is a test road hazard report.', 'verified', 'passable', NULL, 3, '2026-09-24 00:09:03', '2026-09-24 00:15:39'),
-(2, 2, 1, 1, 'Second Test Road', 'Near Second Test Landmark', 'This report will be used to test rejection.', 'rejected', NULL, 'Insufficient information provided.', 3, '2026-09-24 00:23:49', NULL),
-(3, 2, 1, 7, 'Arellano Street', 'Near Public Market', 'There is a road hazard causing difficulty for vehicles.', 'verified', 'passable', NULL, 3, '2026-09-24 00:49:06', '2026-09-24 03:48:08'),
-(4, 2, 2, 6, 'Second Road Test', 'Near City Hall', 'This report will be used to test the admin rejection feature.', 'rejected', NULL, 'Insufficient information provided.', 3, '2026-09-24 03:52:13', NULL),
-(5, 2, 6, 4, 'Photo Test Road', 'Near Test Area', 'Testing the road hazard photo upload.', 'verified', 'passable', NULL, 3, '2026-09-24 04:08:27', '2026-09-24 04:30:59'),
-(6, 8, 22, 1, 'User Two Test Road', 'Near Test Area', 'Test report from the newly created user.\r\nPhoto: Choose any road/test image', 'verified', 'passable', NULL, 3, '2026-09-24 16:19:20', '2026-09-24 16:22:38'),
-(7, 8, 21, 2, 'mayombo', 'victory terminal', 'the water is wet hahhhahahah', 'rejected', NULL, 'fake news, photo is from google', 3, '2026-09-24 16:26:12', NULL),
-(8, 8, 24, 1, 'Photo Validation Test', 'Test Area', 'Testing normal photo upload.\r\nPhoto: Any JPG/PNG/WebP under 5 MB', 'verified', 'passable', NULL, 3, '2026-09-24 17:37:20', '2026-09-24 17:56:53'),
-(9, 8, 26, 1, 'Reject Security Test', 'ilog', 'Testing updated reject function.', 'rejected', NULL, 'reject!!!', 3, '2026-09-24 17:59:54', NULL),
-(10, 8, 31, 2, 'CSRF Reject Test', 'bdo', 'Testing CSRF protected rejection.', 'rejected', NULL, 'CSRF rejection test successful.', 3, '2026-09-24 18:17:46', NULL),
-(11, 8, 23, 3, 'CSRF Verify Test', 'asdf', 'Testing CSRF protected verification.', 'verified', 'passable', NULL, 3, '2026-09-24 18:26:07', '2026-09-24 18:27:57'),
-(12, 8, 30, 5, 'Final Upload Test', 'Test Area', 'Testing valid photo after validation update.', 'verified', 'passable', NULL, 3, '2026-09-24 19:36:24', '2026-09-24 20:17:02');
 
 -- --------------------------------------------------------
 
@@ -148,17 +139,8 @@ CREATE TABLE `report_photos` (
 
 --
 -- Dumping data for table `report_photos`
+-- (Intentionally empty: demo photos removed with their reports.)
 --
-
-INSERT INTO `report_photos` (`id`, `report_id`, `filename`) VALUES
-(2, 5, 'road_6ab431bb92e0f6.33307346.png'),
-(3, 6, 'road_6ab4dd089cf541.08780964.webp'),
-(4, 7, 'road_6ab4dea4880fc0.71606213.jpg'),
-(5, 8, 'road_6ab4ef509271e2.10677307.webp'),
-(6, 9, 'road_6ab4f49b02bd62.44629722.webp'),
-(7, 10, 'road_6ab4f8cabfd752.57046824.jpg'),
-(8, 11, 'road_6ab4fabf08dde9.79065674.webp'),
-(9, 12, 'road_6ab50b386dc766.94143990.jpg');
 
 -- --------------------------------------------------------
 
@@ -171,8 +153,8 @@ CREATE TABLE `users` (
   `full_name` varchar(150) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `security_question` varchar(255) NOT NULL,
-  `security_answer` varchar(255) NOT NULL,
+  `security_question` varchar(255) DEFAULT NULL,
+  `security_answer` varchar(255) DEFAULT NULL,
   `role` enum('user','admin','super_admin') NOT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_by` int(11) DEFAULT NULL,
@@ -184,11 +166,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `full_name`, `email`, `password_hash`, `security_question`, `security_answer`, `role`, `is_active`, `created_by`, `created_at`) VALUES
-(1, 'RoadWatch Super Admin', 'superadmin@roadwatch.local', '$2y$10$kPbUg9vR.PipfmPEvFLIrO.lyal03R/FqMUSXkl3a9lYuvYGgrWgW', 'What is the system name?', 'RoadWatch', 'super_admin', 1, NULL, '2026-09-23 23:58:52'),
-(2, 'Test User', 'user@roadwatch.local', '$2y$10$9RsOn4I3obnNNevEb4.CX.qJFzX9zAYcDclTidZmPiXZTQDSritPy', 'What is the system name?', 'RoadWatch', 'user', 1, 1, '2026-09-24 00:07:25'),
-(3, 'Test Admin', 'admin@roadwatch.local', '$2y$10$ubJ.zG3.uqEV70VsBTCoeuXcDk7LZXAP.V2w83MJnOAttpmCPTeDW', 'What is the system name?', 'RoadWatch', 'admin', 1, 1, '2026-09-24 00:13:50'),
-(4, 'RoadWatch Test Account', 'testaccount@roadwatch.local', '$2y$10$xJaMPag8Kgqxcbd5IMnGBu3lyUtTjRC6GdfXSj3d8hkYJhd311EJO', 'What is your favorite color?', 'Blue', 'user', 1, 1, '2026-09-24 14:49:44'),
-(8, 'RoadWatch User Two', 'user2@roadwatch.local', '$2y$10$8I77A9VDmZWZSt7xOYxWAeMhQ7PFGp4eYURWR1vrG1SUg5kuFGMYW', 'What is your favorite color?', 'Blue', 'user', 1, 1, '2026-09-24 16:12:25'),
+(1, 'RoadWatch Super Admin', 'superadmin@roadwatch.local', '$2y$10$kPbUg9vR.PipfmPEvFLIrO.lyal03R/FqMUSXkl3a9lYuvYGgrWgW', 'What is the system name?', '$2y$10$czcPHV9JBTldn3rEF9Eznex7PMUVbsot0Kdva28zaBfcZwwOgNpC.', 'super_admin', 1, NULL, '2026-09-23 23:58:52'),
+(2, 'Test User', 'user@roadwatch.local', '$2y$10$9RsOn4I3obnNNevEb4.CX.qJFzX9zAYcDclTidZmPiXZTQDSritPy', 'What is the system name?', '$2y$10$f63/J74JuzkHr1sjSQmaGu175HfiFPZqgjWEeMaq7mSQSComusyJW', 'user', 1, 1, '2026-09-24 00:07:25'),
+(3, 'Test Admin', 'admin@roadwatch.local', '$2y$10$ubJ.zG3.uqEV70VsBTCoeuXcDk7LZXAP.V2w83MJnOAttpmCPTeDW', 'What is the system name?', '$2y$10$vBno8qStWY0DW0NNfJF8Cub25SMH0G.KlBINsHgQC6rzNjIr2bKFO', 'admin', 1, 1, '2026-09-24 00:13:50'),
+(4, 'RoadWatch Test Account', 'testaccount@roadwatch.local', '$2y$10$xJaMPag8Kgqxcbd5IMnGBu3lyUtTjRC6GdfXSj3d8hkYJhd311EJO', 'What is your favorite color?', '$2y$10$Ihc9CyArMeExYF/1xzUQwePNa6bAbNrWUAVVo8NBHBb.Hyx16KUxe', 'user', 1, 1, '2026-09-24 14:49:44'),
+(8, 'RoadWatch User Two', 'user2@roadwatch.local', '$2y$10$8I77A9VDmZWZSt7xOYxWAeMhQ7PFGp4eYURWR1vrG1SUg5kuFGMYW', 'What is your favorite color?', '$2y$10$M0r/gaYr65DUz/YG0ZZS2.E1akojf1X4nj92DSn56pYcBaN0WuXk2', 'user', 1, 1, '2026-09-24 16:12:25'),
 (9, 'Security Test User', 'securitytest@roadwatch.local', '$2y$10$BmKuuSmmFr3ZZz0SZ/L6u.2mYOHCPtvOGkC7oH8Oc7o.X3YHTOHZy', 'What is your favorite food?', '$2y$10$BDSJS0pOmzCpUTIhTkdGUOfdqwCdfvXoVdVn1pdT0O0zu8RzjUF0y', 'user', 1, 1, '2026-09-24 17:13:50');
 
 --

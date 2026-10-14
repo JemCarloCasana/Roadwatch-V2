@@ -11,8 +11,41 @@ uploads/*
 # Environment/config files
 .env
 .env.*
+*.env
 
-# OS/editor files
+# AI Agent, Skills, and Tooling (Local agent environments)
+.agents/
+.claude/
+agent/
+skills-lock.json
+
+# Local Prompts, Notes, and Scratchpads
+ui prompt.md
+*.prompt.md
+scratch/
+
+# Design Mockups & Local Reference Assets
+Roadwatch UI/
+
+# Python caches and bytecode (from skill search tools)
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# OS and Editor metadata
 .DS_Store
 Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
 .vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*~
+
+# Logs and Temporary files
+*.log
+*.tmp
+*.temp
