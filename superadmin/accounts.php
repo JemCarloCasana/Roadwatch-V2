@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'] ?? '';
         if (empty($full_name) || empty($email) || empty($security_question) || empty($security_answer)) {
             $error = 'Please fill out all fields.';
+        } elseif (!in_array($security_question, recovery_questions(), true)) {
+            $error = 'Please select a valid recovery question.';
         } elseif (strlen($password) < 8) {
             $error = 'Password must be at least 8 characters.';
         } elseif (!in_array($role, ['user', 'admin'], true)) {
@@ -98,7 +100,12 @@ require_once '../includes/header.php';
 
             <div class="form-group">
                 <label for="security_question">Security Recovery Question *</label>
-                <input id="security_question" type="text" name="security_question" placeholder="e.g. Name of the street you grew up on?" required value="<?php echo htmlspecialchars($security_question); ?>">
+                <select id="security_question" name="security_question" required>
+                    <option value="" disabled <?php echo $security_question === '' ? 'selected' : ''; ?>>Select a recovery question</option>
+                    <?php foreach (recovery_questions() as $q): ?>
+                        <option value="<?php echo htmlspecialchars($q); ?>" <?php echo $security_question === $q ? 'selected' : ''; ?>><?php echo htmlspecialchars($q); ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="form-group">

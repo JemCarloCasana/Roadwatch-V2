@@ -163,6 +163,26 @@ function passability_display($raw): array {
 define('ROADWATCH_PER_PAGE', 50);
 
 /**
+ * Canonical account-recovery question list (single source of truth).
+ * New citizen signups, superadmin-provisioned accounts, and the NULL-cohort
+ * setup flow must all validate against this list with strict in_array().
+ * Existing accounts holding a non-listed question are grandfathered:
+ * do NOT rewrite their stored hashes.
+ *
+ * @return string[]
+ */
+function recovery_questions(): array {
+    return [
+        'What was the name of your first pet?',
+        'What city were you born in?',
+        'What was the name of your elementary school?',
+        "What is your mother's maiden name?",
+        'What street did you grow up on?',
+        'What is your favorite food?',
+    ];
+}
+
+/**
  * Render a windowed pager (prev + 1 … c-1 c c+1 … N + next) preserving $params.
  * Returns '' when everything fits on one page.
  */

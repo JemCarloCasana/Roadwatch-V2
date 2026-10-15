@@ -5,6 +5,7 @@ require_once '../includes/db.php';
 $message = '';
 $full_name = trim($_POST['full_name'] ?? '');
 $email = trim($_POST['email'] ?? '');
+
 $security_question = trim($_POST['security_question'] ?? '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,8 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($full_name === '' || $email === '') {
             $message = 'Please complete all required fields.';
-        } elseif ($security_question === '' || $security_answer === '') {
-            $message = 'Please set a recovery question and answer so you can reset your password later.';
+        } elseif (!in_array($security_question, recovery_questions(), true)) {
+            $message = 'Please select a valid recovery question.';
+        } elseif ($security_answer === '') {
+            $message = 'Please provide an answer to your recovery question.';
         } elseif (strlen($password) < 8) {
             $message = 'Password must be at least 8 characters long.';
         } elseif ($password !== $confirm_password) {
@@ -54,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create an Account - RoadWatch Dagupan</title>
     <link rel="stylesheet" href="../includes/style.css">
-    <link rel="icon" type="image/png" href="../includes/roadwatch.png">
+    <link rel="icon" type="image/png" href="../includes/RoadWatch.png">
 </head>
 <body>
     <main class="auth-page">
@@ -64,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </a>
 
             <div class="brand-lockup" style="margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--line);">
-                <span class="brand-mark">RW</span>
+                <img src="../includes/RoadWatch.png" alt="RoadWatch logo" class="brand-mark-img" width="36" height="36">
                 <div>
                     <div class="brand-title">ROADWATCH DAGUPAN</div>
                     <div class="brand-subtitle">Community road hazard reporting for Dagupan City</div>
@@ -122,7 +125,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-group">
                     <label for="security_question">Recovery Question <span style="color: var(--impassable-red);">*</span></label>
-                    <input id="security_question" type="text" name="security_question" required autocomplete="off" placeholder="e.g. Name of the street you grew up on?" value="<?php echo htmlspecialchars($security_question); ?>">
+                    <select id="security_question" name="security_question" required>
+                        <option value="" disabled <?php echo $security_question === '' ? 'selected' : ''; ?>>Select a recovery question</option>
+                        <?php foreach (recovery_questions() as $q): ?>
+                            <option value="<?php echo htmlspecialchars($q); ?>" <?php echo $security_question === $q ? 'selected' : ''; ?>><?php echo htmlspecialchars($q); ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
 
                 <div class="form-group">

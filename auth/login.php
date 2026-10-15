@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $email = trim($_POST["email"] ?? '');
         $password = $_POST["password"] ?? '';
 
-        $sql = "SELECT id, full_name, email, password_hash, role, is_active
+        $sql = "SELECT id, full_name, email, password_hash, role, is_active, security_question
                 FROM users
                 WHERE email = ? AND role = 'user'
                 LIMIT 1";
@@ -54,6 +54,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if ($user && password_verify($password, $user["password_hash"])) {
             if ((int) $user["is_active"] === 1) {
+                if (empty($user["security_question"])) {
+                    // NULL cohort (created while Q&A fields were removed):
+                    // hold a pending id only — grant NO session — until Q&A setup completes.
+                    session_regenerate_id(true);
+                    unset($_SESSION["user_id"], $_SESSION["role"], $_SESSION["full_name"]);
+                    $_SESSION["pending_recovery_user_id"] = (int) $user["id"];
+                    set_flash('info', 'Please set a recovery question and answer to finish signing in.');
+                    header("Location: setup_recovery.php");
+                    exit;
+                }
                 session_regenerate_id(true);
 
                 $_SESSION["user_id"] = $user["id"];
@@ -86,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Citizen Sign In - RoadWatch Dagupan</title>
     <link rel="stylesheet" href="../includes/style.css">
-    <link rel="icon" type="image/png" href="../includes/roadwatch.png">
+    <link rel="icon" type="image/png" href="../includes/RoadWatch.png">
 </head>
 <body>
     <main class="auth-page">
@@ -100,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <!-- Brand Lockup Box -->
             <div class="auth-banner-box">
                 <div class="brand-lockup">
-                    <span class="brand-mark">RW</span>
+                    <img src="../includes/RoadWatch.png" alt="RoadWatch logo" class="brand-mark-img" width="36" height="36">
                     <div>
                         <div class="brand-title">ROADWATCH DAGUPAN</div>
                         <div class="brand-subtitle">Community road hazard reporting for Dagupan City</div>
