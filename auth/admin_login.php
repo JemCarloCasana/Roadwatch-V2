@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     session_regenerate_id(true);
                     unset($_SESSION['user_id'], $_SESSION['role'], $_SESSION['full_name']);
                     $_SESSION['pending_password_user_id'] = (int) $user['id'];
+                    unset($_SESSION['pending_recovery_user_id']);
                     set_flash('warning', 'For your security, please set a new password before continuing.');
                     header('Location: change_password.php');
                     exit;
@@ -40,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['full_name'] = $user['full_name'];
                 $_SESSION['role'] = $user['role'];
+                unset($_SESSION['pending_password_user_id'], $_SESSION['pending_recovery_user_id']);
                 
                 header('Location: ' . ($user['role'] === 'super_admin' ? '../superadmin/accounts.php' : '../admin/reports.php'));
                 exit;

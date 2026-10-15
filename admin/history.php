@@ -8,6 +8,9 @@ $page = max(1, (int) ($_GET['page'] ?? 1));
 
 // Audit filter: verified / rejected / expired ('all' keeps every decided
 // report, including sunset-expired ones the queue no longer shows).
+// $status_where is interpolated, not bound, because mysqli has no placeholder
+// for a dynamic IN-list; it stays safe because $status_filter is strictly
+// whitelisted below (in_array with strict=true) before any interpolation.
 $status_filter = $_GET['status'] ?? 'all';
 if (!in_array($status_filter, ['all', 'verified', 'rejected', 'expired'], true)) {
     $status_filter = 'all';

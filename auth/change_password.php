@@ -38,13 +38,31 @@ function pending_password_account($conn, int $pending_id): ?array {
  * Complete sign-in for a rotated account. Citizens bounce through login.php
  * so its citizen_home() smart-routing stays the single routing decision;
  * staff roles go straight to their consoles.
+ *
+ * NULL-cohort chaining (Task 2 gate): a rotated account whose recovery
+ * question slot is still empty (flag=1 + empty security_question) must NOT
+ * receive a full session here — hold pending_recovery_user_id instead and
+ * route into setup_recovery.php, which owns that gate.
  */
-function complete_rotated_login(array $account): void {
+function complete_rotated_login($conn, array $account): void {
+    $id = (int) $account['id'];
+    $qstmt = mysqli_prepare($conn, 'SELECT security_question FROM users WHERE id = ? LIMIT 1');
+    mysqli_stmt_bind_param($qstmt, 'i', $id);
+    mysqli_stmt_execute($qstmt);
+    $freshQ = mysqli_fetch_assoc(mysqli_stmt_get_result($qstmt));
+    mysqli_stmt_close($qstmt);
+
     session_regenerate_id(true);
-    $_SESSION['user_id'] = (int) $account['id'];
+    unset($_SESSION['pending_password_user_id'], $_SESSION['pending_recovery_user_id']);
+    if (($account['role'] ?? '') === 'user' && empty($freshQ['security_question'])) {
+        $_SESSION['pending_recovery_user_id'] = $id;
+        set_flash('info', 'Password updated. Now set a recovery question and answer to finish signing in.');
+        header('Location: setup_recovery.php');
+        exit;
+    }
+    $_SESSION['user_id'] = $id;
     $_SESSION['full_name'] = $account['full_name'];
     $_SESSION['role'] = $account['role'];
-    unset($_SESSION['pending_password_user_id']);
     if (($account['role'] ?? '') === 'super_admin') {
         header('Location: ../superadmin/accounts.php');
     } elseif (($account['role'] ?? '') === 'admin') {
@@ -56,7 +74,7 @@ function complete_rotated_login(array $account): void {
 }
 
 function abandon_rotated_login(string $message): void {
-    unset($_SESSION['pending_password_user_id']);
+    unset($_SESSION['pending_password_user_id'], $_SESSION['pending_recovery_user_id']);
     set_flash('error', $message);
     header('Location: login.php');
     exit;
@@ -65,12 +83,13 @@ function abandon_rotated_login(string $message): void {
 $account = pending_password_account($conn, $pending_id);
 if ($account === null) {
     abandon_rotated_login('This password-change session is no longer valid. Please log in again.');
+    exit;
 }
 
 if ((int) ($account['must_change_password'] ?? 0) !== 1) {
     // Flag already cleared (e.g. a second tab finished rotation) — sign in.
     set_flash('success', 'Password already updated. You are now signed in.');
-    complete_rotated_login($account);
+    complete_rotated_login($conn, $account);
 }
 
 $message = '';
@@ -107,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($saved) {
                 $account['must_change_password'] = 0;
                 set_flash('success', 'Password updated. You are now signed in.');
-                complete_rotated_login($account);
+                complete_rotated_login($conn, $account);
             }
             $message = 'Failed to update your password. Please try again.';
         }
