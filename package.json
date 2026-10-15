@@ -1,0 +1,29 @@
+{
+  "name": "roadwatch-v2",
+  "version": "1.0.0",
+  "description": "Community road hazard reporting for Dagupan City. XAMPP + PHP (mysqli) + MySQL/MariaDB.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/tailwind-input.css -o ./includes/tailwind.css",
+    "watch:css": "tailwindcss -i ./assets/tailwind-input.css -o ./includes/tailwind.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JemCarloCasana/Roadwatch-V2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/JemCarloCasana/Roadwatch-V2/issues"
+  },
+  "homepage": "https://github.com/JemCarloCasana/Roadwatch-V2#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

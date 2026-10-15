@@ -6,18 +6,30 @@ uploads/*
 
 # Database backups
 *.sql
-!database/roadwatch_db.sql
+!database/migrations/*.sql
+!database/seeds/*.sql
+!database/snapshots/*.sql
 
 # Environment/config files
 .env
 .env.*
 *.env
+!.env.example
 
 # AI Agent, Skills, and Tooling (Local agent environments)
+.opencode/
+.superpowers/
 .agents/
 .claude/
+.codex/
+.cursor/
+.windsurf/
+.continue/
+.agent/
 agent/
 skills-lock.json
+.aider*
+.cline/
 
 # Local Prompts, Notes, and Scratchpads
 ui prompt.md
@@ -32,20 +44,67 @@ __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
 
 # OS and Editor metadata
 .DS_Store
+._*
+.Spotlight-V100
+.Trashes
 Thumbs.db
 ehthumbs.db
 [Dd]esktop.ini
 .vscode/
+.history/
+*.code-workspace
 .idea/
 *.sublime-workspace
 *.sublime-project
 *.swp
 *~
+.viminfo
+Session.vim
 
-# Logs and Temporary files
+# PHP / Composer (XAMPP)
+vendor/
+composer.phar
+auth.json
+error_log
+php_errors.log
+.phpunit.cache/
+.phpunit.result.cache
+coverage/
+htmlcov/
+
+# Node / Tailwind build
+# NOTE: includes/tailwind.css is intentionally COMMITTED so XAMPP works without npm.
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnp.*
+.yarn/*
+!.yarn/releases/**
+!.yarn/patches/**
+dist/
+build/
+.coverage/
+.nyc_output/
+*.tsbuildinfo
+.cache/
+.parcel-cache/
+
+# Logs, Backups, and Temporary files
 *.log
+debug.log
 *.tmp
-*.temp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.rej

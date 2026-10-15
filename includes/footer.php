@@ -1,6 +1,6 @@
 </main>
-<footer style="margin-top: 60px; padding: 24px 0; border-top: 1px solid var(--line); text-align: center; color: var(--muted); font-size: 0.85rem;">
-    <div style="width: min(1200px, calc(100% - 32px)); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+<footer class="mt-[60px] border-t border-line py-6 text-center text-[0.85rem] text-mist">
+    <div class="mx-auto flex w-[calc(100%-32px)] max-w-[1200px] flex-wrap items-center justify-between gap-3">
         <div>&copy; <?php echo date('Y'); ?> RoadWatch Dagupan. Community-powered civic road safety.</div>
         <div>City Engineering &amp; Disaster Risk Reduction Operations</div>
     </div>

@@ -144,7 +144,7 @@ require_once '../includes/header.php';
                 Review submitted road hazard reports and decide whether they should appear on RoadWatch.
             </p>
         </div>
-        <div style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--muted); background: #fff; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); white-space: nowrap;">
+        <div class="flex items-center gap-1.5 whitespace-nowrap rounded-md border border-line bg-paper px-3 py-1.5 text-[0.82rem] text-mist">
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>

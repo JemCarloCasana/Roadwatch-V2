@@ -1,0 +1,49 @@
+/* RoadWatch Tailwind entry point (v4, utilities-only).
+ *
+ * Preflight is intentionally EXCLUDED: every page shares includes/header.php
+ * and its hand-written includes/style.css, so a global reset would restyle
+ * the whole app at once. This file ships the theme tokens + utilities only.
+ *
+ * Utilities are intentionally UNLAYERED (no layer() on the import below):
+ * style.css contains an unlayered `* { margin: 0; padding: 0 }` reset, and
+ * unlayered always beats layered — so layered utilities for margin/padding
+ * would silently never apply. Unlayered utilities win by specificity
+ * (.mb-4 beats `*`) or by source order (tailwind.css loads AFTER style.css
+ * in header.php, so ties against single-class rules resolve to utilities).
+ * New utilities must still avoid dueling a style.css rule whose value you
+ * need to keep: on a tie the utility now wins.
+ *
+ * To adopt the full Tailwind reset later, replace the two imports below with:
+ *   @import "tailwindcss";
+ */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css";
+
+/* RoadWatch brand tokens. Mirror of the :root palette in includes/style.css
+ * (single source of truth stays there; these exist so utilities like
+ * bg-navy / text-mist / border-line resolve). Names frozen by plan ledger. */
+@theme {
+  --color-navy: #0b1e36;
+  --color-paper: #ffffff;
+  --color-ink: #0f172a;
+  --color-mist: #64748b;
+  --color-line: #e2e8f0;
+  --color-alert: #dc2626;
+  --color-amber: #d97706;
+  --color-ok: #059669;
+}
+
+/* Extracted duplicates (each was triplicated+ inline). Full literal class
+ * names in markup so the v4 scanner detects them. */
+@utility step-num {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--brand-navy);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}

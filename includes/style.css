@@ -1722,6 +1722,92 @@ a.incident-card:hover {
     }
 }
 
+/* ==========================================================================
+   RoadWatch shaped map pins (Leaflet divIcon) — teardrop + status color.
+   Color is never the only signal: shape + white glyph + legend carry meaning.
+   ========================================================================== */
+.leaflet-div-icon.rw-div {
+    background: transparent;
+    border: none;
+}
+
+.rw-pin {
+    position: relative;
+    width: 30px;
+    height: 42px;
+}
+
+.rw-pin-body {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: grid;
+    place-items: center;
+    background: var(--passable-green);
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.35);
+}
+
+.rw-pin-body svg {
+    transform: rotate(45deg);
+    width: 15px;
+    height: 15px;
+    color: #ffffff;
+}
+
+.rw-pin-passable .rw-pin-body { background: var(--passable-green); }
+.rw-pin-partial .rw-pin-body { background: var(--partial-amber); }
+.rw-pin-impassable .rw-pin-body { background: var(--impassable-red); }
+.rw-pin-draft .rw-pin-body { background: var(--brand-navy); }
+
+.rw-pin-impassable .rw-pin-body::after {
+    content: "";
+    position: absolute;
+    inset: -7px;
+    border-radius: 50%;
+    border: 2px solid var(--impassable-red);
+    opacity: 0.55;
+    animation: rw-pin-pulse 1.8s ease-out infinite;
+}
+
+@keyframes rw-pin-pulse {
+    0% { transform: scale(0.7); opacity: 0.7; }
+    70% { transform: scale(1.15); opacity: 0; }
+    100% { transform: scale(1.15); opacity: 0; }
+}
+
+.rw-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 12px;
+    font-size: 0.82rem;
+    color: var(--ink-secondary);
+}
+
+.rw-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.rw-legend-swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2px solid #ffffff;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.35);
+    flex-shrink: 0;
+}
+
+.rw-legend-swatch.is-impassable { background: var(--impassable-red); }
+.rw-legend-swatch.is-partial { background: var(--partial-amber); }
+.rw-legend-swatch.is-passable { background: var(--passable-green); }
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

@@ -345,9 +345,9 @@ require_once '../includes/header.php';
                         <div style="flex: 1;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <strong style="color: var(--impassable-red); font-size: 0.92rem;">Impassable</strong>
-                                <span style="background: var(--impassable-red); color: #fff; font-size: 0.75rem; font-weight: 800; padding: 1px 6px; border-radius: 3px;">SELECTED</span>
+                                <span class="rounded-[3px] bg-alert px-1.5 py-[1px] text-[0.75rem] font-extrabold text-white">SELECTED</span>
                             </div>
-                            <span class="muted" style="font-size: 0.8rem;">The road currently cannot be used normally.</span>
+                            <span class="muted text-[0.8rem]">The road currently cannot be used normally.</span>
                         </div>
                     </div>
 

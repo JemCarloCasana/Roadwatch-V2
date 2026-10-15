@@ -259,21 +259,21 @@ require_once '../includes/header.php';
 
                 <div style="display: flex; flex-direction: column; gap: 14px; font-size: 0.84rem;">
                     <div style="display: flex; gap: 10px; align-items: flex-start;">
-                        <span style="width: 22px; height: 22px; border-radius: 4px; background: var(--brand-navy); color: #fff; font-size: 0.72rem; font-weight: 700; display: grid; place-items: center; flex-shrink: 0;">1</span>
+                        <span class="step-num">1</span>
                         <div>
                             <strong style="color: var(--brand-navy); display: block;">Citizen Intake</strong>
                             <span class="muted" style="font-size: 0.78rem;">Your report and optional photo arrive at the admin portal.</span>
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: flex-start;">
-                        <span style="width: 22px; height: 22px; border-radius: 4px; background: var(--brand-navy); color: #fff; font-size: 0.72rem; font-weight: 700; display: grid; place-items: center; flex-shrink: 0;">2</span>
+                        <span class="step-num">2</span>
                         <div>
                             <strong style="color: var(--brand-navy); display: block;">Cross-Referencing</strong>
                             <span class="muted" style="font-size: 0.78rem;">Tide tables, nearby CCTV feeds, and CDRRMO patrol reports verify water depth.</span>
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: flex-start;">
-                        <span style="width: 22px; height: 22px; border-radius: 4px; background: var(--brand-navy); color: #fff; font-size: 0.72rem; font-weight: 700; display: grid; place-items: center; flex-shrink: 0;">3</span>
+                        <span class="step-num">3</span>
                         <div>
                             <strong style="color: var(--brand-navy); display: block;">Public Broadcasting</strong>
                             <span class="muted" style="font-size: 0.78rem;">Live markers populate the public corridor map with vehicle passability tags.</span>
@@ -295,7 +295,7 @@ require_once '../includes/header.php';
             </div>
 
             <!-- Card 3: CDRRMO Emergency Hotline -->
-            <div class="panel" style="padding: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff;">
+            <div class="panel flex items-center justify-between gap-3" style="padding: 18px;">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div style="width: 38px; height: 38px; border-radius: 6px; background: var(--line-subtle); display: grid; place-items: center; color: var(--brand-navy);">
                         <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">

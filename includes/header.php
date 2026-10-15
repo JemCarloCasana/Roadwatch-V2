@@ -22,7 +22,8 @@ if (!isset($pathDepth) && basename(dirname($_SERVER['PHP_SELF'])) === 'roadwatch
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8'); ?></title>
     <link rel="stylesheet" href="<?php echo $basePath; ?>includes/style.css">
-    <link rel="icon" type="image/png" href="<?php echo $basePath; ?>includes/roadwatch.png">
+    <link rel="stylesheet" href="<?php echo $basePath; ?>includes/tailwind.css">
+    <link rel="icon" type="image/png" href="<?php echo $basePath; ?>includes/RoadWatch.png">
     <?php if (!empty($extraHead)) echo $extraHead; ?>
 </head>
 <body>
@@ -30,7 +31,7 @@ if (!isset($pathDepth) && basename(dirname($_SERVER['PHP_SELF'])) === 'roadwatch
 <header class="site-header">
     <div class="site-header-inner">
         <a href="<?php echo $basePath; ?>index.php" class="brand-lockup">
-            <span class="brand-mark">RW</span>
+            <img src="<?php echo $basePath; ?>includes/RoadWatch.png" alt="RoadWatch logo" class="brand-mark-img" width="36" height="36">
             <div>
                 <div class="brand-title">RoadWatch</div>
                 <div class="brand-subtitle">Dagupan City Hazard Operations</div>

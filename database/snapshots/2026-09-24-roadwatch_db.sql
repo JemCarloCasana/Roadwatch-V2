@@ -1,3 +1,8 @@
+-- SNAPSHOT (NOT AUTHORITATIVE): historical phpMyAdmin dump, Sep 24 2026.
+-- Do NOT import to install. Fresh clones must use: php database/migrate.php
+-- Known divergences from the migrator path: FKs lack ON DELETE/UPDATE actions,
+-- no updated_at/reviewed_at/must_change_password columns, no composite indexes,
+-- ships test users. Kept for forensics only.
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/

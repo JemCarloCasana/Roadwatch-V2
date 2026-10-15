@@ -191,17 +191,17 @@ require_once 'includes/header.php';
 
         <!-- Filter Chips Row & Map Toggle (Grilled Decision 1) from Main.png -->
         <div class="hero-controls">
-            <div class="filter-chip-row" style="margin-bottom: 0;" role="group" aria-label="Filter by passability">
-                <a href="?passability=all&view=<?php echo $view_mode; ?>&barangay_id=<?php echo $barangay_id; ?>" class="filter-chip <?php echo $filter_passability === 'all' ? 'active' : ''; ?>" aria-pressed="<?php echo $filter_passability === 'all' ? 'true' : 'false'; ?>">
+            <div class="filter-chip-row" role="group" aria-label="Filter by passability">
+                <a href="?passability=all&view=<?php echo $view_mode; ?>&barangay_id=<?php echo $barangay_id; ?>" title="Show all verified reports" class="filter-chip <?php echo $filter_passability === 'all' ? 'active' : ''; ?>" aria-pressed="<?php echo $filter_passability === 'all' ? 'true' : 'false'; ?>">
                     All
                 </a>
-                <a href="?passability=impassable&view=<?php echo $view_mode; ?>&barangay_id=<?php echo $barangay_id; ?>" class="filter-chip <?php echo $filter_passability === 'impassable' ? 'active' : ''; ?>" aria-pressed="<?php echo $filter_passability === 'impassable' ? 'true' : 'false'; ?>">
+                <a href="?passability=impassable&view=<?php echo $view_mode; ?>&barangay_id=<?php echo $barangay_id; ?>" title="The road currently cannot be used normally." class="filter-chip <?php echo $filter_passability === 'impassable' ? 'active' : ''; ?>" aria-pressed="<?php echo $filter_passability === 'impassable' ? 'true' : 'false'; ?>">
                     Impassable
                 </a>
-                <a href="?passability=partially_passable&view=<?php echo $view_mode; ?>&barangay_id=<?php echo $barangay_id; ?>" class="filter-chip <?php echo $filter_passability === 'partially_passable' ? 'active' : ''; ?>" aria-pressed="<?php echo $filter_passability === 'partially_passable' ? 'true' : 'false'; ?>">
+                <a href="?passability=partially_passable&view=<?php echo $view_mode; ?>&barangay_id=<?php echo $barangay_id; ?>" title="Some vehicles can pass, but movement may be limited." class="filter-chip <?php echo $filter_passability === 'partially_passable' ? 'active' : ''; ?>" aria-pressed="<?php echo $filter_passability === 'partially_passable' ? 'true' : 'false'; ?>">
                     Partially passable
                 </a>
-                <a href="?passability=passable&view=<?php echo $view_mode; ?>&barangay_id=<?php echo $barangay_id; ?>" class="filter-chip <?php echo $filter_passability === 'passable' ? 'active' : ''; ?>" aria-pressed="<?php echo $filter_passability === 'passable' ? 'true' : 'false'; ?>">
+                <a href="?passability=passable&view=<?php echo $view_mode; ?>&barangay_id=<?php echo $barangay_id; ?>" title="Road can be used normally without obstruction." class="filter-chip <?php echo $filter_passability === 'passable' ? 'active' : ''; ?>" aria-pressed="<?php echo $filter_passability === 'passable' ? 'true' : 'false'; ?>">
                     Passable
                 </a>
             </div>
@@ -218,27 +218,15 @@ require_once 'includes/header.php';
         </div>
     </div>
 
-    <section class="legend-panel" aria-label="What each status means">
-        <div class="legend-grid">
-            <div>
-                <strong class="legend-term legend-impassable">Impassable</strong>
-                <div class="legend-def">The road currently cannot be used normally.</div>
-            </div>
-            <div>
-                <strong class="legend-term legend-partial">Partially passable</strong>
-                <div class="legend-def">Some vehicles can pass, but movement may be limited.</div>
-            </div>
-            <div>
-                <strong class="legend-term legend-passable">Passable</strong>
-                <div class="legend-def">Road can be used normally without obstruction.</div>
-            </div>
-        </div>
-    </section>
-
     <!-- Toggleable View Mode: MAP VIEW -->
     <?php if ($view_mode === 'map'): ?>
         <section class="panel" style="padding: 16px; margin-bottom: 24px;">
             <div id="live-map-full" style="height: 520px; border-radius: var(--radius-sm); border: 1px solid var(--line); z-index: 5;"></div>
+            <div class="rw-legend" aria-label="Map pin legend">
+                <span class="rw-legend-item"><span class="rw-legend-swatch is-impassable" aria-hidden="true"></span>Impassable</span>
+                <span class="rw-legend-item"><span class="rw-legend-swatch is-partial" aria-hidden="true"></span>Partially passable</span>
+                <span class="rw-legend-item"><span class="rw-legend-swatch is-passable" aria-hidden="true"></span>Passable</span>
+            </div>
         </section>
     <?php endif; ?>
 
@@ -331,27 +319,22 @@ require_once 'includes/header.php';
         <?php if ($view_mode !== 'map') echo render_pager($total_reports, $page, $pager_params); ?>
     <?php endif; ?>
 
-    <!-- About These Reports & Emergency Section from Main.png -->
-    <section class="about-panel">
-        <div class="about-grid">
-            <div class="about-main">
-                <h2 class="about-title">About these reports</h2>
-                <p class="about-text">
-                    RoadWatch shows reports from residents, checked by admins before they appear here. Conditions change fast in monsoon rain and high tide. If you see a new hazard, report it for fellow Dagupan residents.
-                </p>
+    <!-- Emergency notice: kept prominent above the about strip (Task 2 treatment preserved). -->
+    <div class="mb-4 flex items-start gap-3 rounded-md border border-[#fecaca] border-l-4 border-l-alert bg-[#fef2f2] px-4 py-3">
+        <svg class="shrink-0 text-alert" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+        </svg>
+        <div class="emergency-text">
+            <strong class="text-xs font-bold uppercase tracking-wider text-[#991b1b]">Emergency notice:</strong> For life-threatening emergencies or urgent rescue, contact Dagupan CDRRMO directly at <a href="<?php echo ROADWATCH_CDRRMO_TEL; ?>" class="inline-flex min-h-[44px] items-center font-bold underline underline-offset-2"><?php echo ROADWATCH_CDRRMO_DISPLAY; ?></a>.
+        </div>
+    </div>
 
-                <!-- Emergency Notice Box from Main.png -->
-                <div class="emergency-box">
-                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" style="color: var(--impassable-red); flex-shrink: 0;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    <div class="emergency-text">
-                        <strong>Emergency notice:</strong> For life-threatening emergencies or urgent rescue, contact Dagupan CDRRMO directly at <strong><?php echo ROADWATCH_CDRRMO_DISPLAY; ?></strong>.
-                    </div>
-                </div>
-            </div>
-
-            <div class="about-cta">
+    <!-- About strip: one line + CTA. -->
+    <section class="panel" aria-label="About these reports">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="muted text-[0.88rem] mb-0">
+                Resident reports, checked by admins before they appear here. Conditions change fast in rain and high tide.
+            </p>
             <?php
             // Role-aware CTA: guests -> citizen sign-in, citizens -> report
             // intake, admins/super_admins -> their own consoles (the citizen
@@ -368,10 +351,9 @@ require_once 'includes/header.php';
                 }
             }
             ?>
-                <a href="<?php echo htmlspecialchars($cta_href); ?>" class="btn-navy about-btn">
-                    Report a road hazard
-                </a>
-            </div>
+            <a href="<?php echo htmlspecialchars($cta_href); ?>" class="btn-navy btn-sm">
+                Report a road hazard
+            </a>
         </div>
     </section>
 </div>
@@ -390,30 +372,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const hasBarangay = <?php echo $barangay_id > 0 ? 'true' : 'false'; ?>;
     const bounds = L.latLngBounds();
     let located = 0;
+
+    // Shaped pins: teardrop shell + white glyph + status color.
+    // rwPin(passability, hazardId) reserves hazardId for future per-hazard
+    // glyphs; currently all pins use the generic alert glyph.
+    const RW_PIN_GLYPH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>';
+
+    function rwPinClass(passability) {
+        if (passability === 'not_passable' || passability === 'impassable') return 'rw-pin-impassable';
+        if (passability === 'partially_passable' || passability === 'partial') return 'rw-pin-partial';
+        return 'rw-pin-passable';
+    }
+
+    function rwPin(passability, hazardId) {
+        const cls = rwPinClass(passability);
+        return L.divIcon({
+            className: 'rw-div',
+            html: `<div class="rw-pin ${cls}"><div class="rw-pin-body">${RW_PIN_GLYPH}</div></div>`,
+            iconSize: [30, 42],
+            iconAnchor: [15, 40],
+            popupAnchor: [0, -36]
+        });
+    }
+
     pins.forEach(pin => {
         if (!pin.latitude || !pin.longitude) return;
 
-        let color = '#059669'; // Passable
-        if (pin.passability === 'partially_passable') color = '#d97706';
-        if (pin.passability === 'not_passable') color = '#dc2626';
+        // Full literal class names: the Tailwind scanner reads source text,
+        // so dynamically concatenated fragments would never generate CSS.
+        let tag = 'bg-[#ecfdf5] text-[#065f46]';
+        if (pin.passability === 'partially_passable') {
+            tag = 'bg-[#fffbeb] text-[#92400e]';
+        }
+        if (pin.passability === 'not_passable') {
+            tag = 'bg-[#fef2f2] text-[#991b1b]';
+        }
 
-        const customIcon = L.divIcon({
-            className: 'custom-pin',
-            html: `<div style="background: ${color}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 8px rgba(0,0,0,0.4);"></div>`,
-            iconSize: [14, 14],
-            iconAnchor: [7, 7]
-        });
+        const customIcon = rwPin(pin.passability, pin.hazard_type_id || pin.hazard_name);
 
         const popupContent = `
-            <div style="font-family: 'Inter', sans-serif; font-size: 13px; line-height: 1.4;">
-                <strong style="color: #0b1e36; font-size: 14px;">${pin.hazard_name}</strong><br>
-                <span style="color: #64748b;">${pin.road_name}, ${pin.barangay_name}</span><br>
-                <div style="margin-top: 6px;">
-                    <span style="display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; background: #f1f5f9; color: #0b1e36;">
+            <div class="text-[13px] leading-[1.4]">
+                <strong class="text-[14px] text-navy">${pin.hazard_name}</strong><br>
+                <span class="text-mist">${pin.road_name}, ${pin.barangay_name}</span><br>
+                <div class="mt-1.5">
+                    <span class="inline-block rounded-full ${tag} px-2 py-[2px] text-xs font-semibold">
                         ${(pin.passability || 'verified').replace(/_/g, ' ')}
                     </span>
                 </div>
-                ${pin.filename ? `<img src="uploads/${pin.filename}" alt="" style="width: 100%; height: 90px; object-fit: cover; border-radius: 6px; margin-top: 8px;">` : ''}
+                ${pin.filename ? `<img src="uploads/${pin.filename}" alt="" class="mt-2 h-[90px] w-full rounded-md object-cover">` : ''}
+                <div class="mt-1.5"><a href="https://www.google.com/maps?q=${pin.latitude},${pin.longitude}" target="_blank" rel="noopener noreferrer">View GPS coordinates</a></div>
             </div>
         `;
 
