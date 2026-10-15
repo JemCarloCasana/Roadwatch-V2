@@ -6,10 +6,35 @@ require_once 'includes/db.php';
 // Automated 48-Hour Sunset Transition (Grilled Decision 4)
 apply_pending_report_sunset($conn);
 
-// Filter parameters
+// Filter parameters: normalized BEFORE building $where so the query,
+// pager, chips, and switcher all consume the same safe values.
 $barangay_id = (int) ($_GET['barangay_id'] ?? 0);
 $filter_passability = $_GET['passability'] ?? 'all';
+if (!in_array($filter_passability, ['all', 'impassable', 'partially_passable', 'passable'], true)) {
+    $filter_passability = 'all';
+}
 $view_mode = $_GET['view'] ?? 'feed'; // 'feed' or 'map' (Grilled Decision 1)
+if (!in_array($view_mode, ['feed', 'map'], true)) {
+    $view_mode = 'feed';
+}
+// Unknown barangay ids fall back to All (0) before SQL: otherwise the
+// query filters on a nonexistent id (empty feed) while the dropdown
+// cosmetically shows All and the pager keeps propagating the bad id.
+if ($barangay_id <= 0) {
+    $barangay_id = 0;
+} else {
+    $known_ids_result = mysqli_query($conn, 'SELECT id FROM barangays');
+    if ($known_ids_result) {
+        $known_ids = [];
+        while ($known_row = mysqli_fetch_assoc($known_ids_result)) {
+            $known_ids[] = (int) $known_row['id'];
+        }
+        mysqli_free_result($known_ids_result);
+        if (!in_array($barangay_id, $known_ids, true)) {
+            $barangay_id = 0;
+        }
+    }
+}
 
 $where = ["reports.status = 'verified'"];
 $params = [];
@@ -106,9 +131,11 @@ if ($barangays_result) {
     }
     mysqli_free_result($barangays_result);
 }
+// $barangay_id was already validated against known ids before SQL (see top);
+// it is therefore normalized here too, so the dropdown below matches the query.
 if ($barangay_id > 0) {
-    $known_ids = array_column($barangay_options, 'id');
-    if (!in_array($barangay_id, array_map('intval', $known_ids), true)) {
+    $known_option_ids = array_map('intval', array_column($barangay_options, 'id'));
+    if (!in_array($barangay_id, $known_option_ids, true)) {
         $barangay_id = 0;
     }
 }
