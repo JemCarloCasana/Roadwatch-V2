@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stored_answer = $user['security_answer'] ?? '';
         if ($user && $stored_answer !== '' && password_verify($answer, $stored_answer)) {
             $_SESSION['reset_verified'] = true;
+            $_SESSION['reset_verified_for'] = $user_id;
             header('Location: reset_password.php');
             exit;
         }
@@ -39,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Security Verification - RoadWatch</title>
     <link rel="stylesheet" href="../includes/style.css">
-    <link rel="icon" type="image/png" href="../includes/roadwatch.png">
+    <link rel="icon" type="image/png" href="../includes/RoadWatch.png">
 </head>
 <body>
     <main class="auth-page">

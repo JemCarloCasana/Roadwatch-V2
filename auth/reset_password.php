@@ -2,7 +2,9 @@
 require_once '../includes/auth_guard.php';
 require_once '../includes/db.php';
 
-if (!isset($_SESSION['reset_user_id'], $_SESSION['reset_verified']) || $_SESSION['reset_verified'] !== true) {
+if (!isset($_SESSION['reset_user_id'], $_SESSION['reset_verified'], $_SESSION['reset_verified_for'])
+    || $_SESSION['reset_verified'] !== true
+    || $_SESSION['reset_verified_for'] !== $_SESSION['reset_user_id']) {
     header('Location: forgot_password.php');
     exit;
 }
@@ -29,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_close($stmt);
-                unset($_SESSION['reset_user_id'], $_SESSION['reset_question'], $_SESSION['reset_verified']);
+                unset($_SESSION['reset_user_id'], $_SESSION['reset_question'], $_SESSION['reset_verified'], $_SESSION['reset_verified_for']);
                 set_flash('success', 'Your password has been successfully reset! You may now sign in.');
                 header('Location: login.php');
                 exit;
@@ -48,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Set New Password - RoadWatch</title>
     <link rel="stylesheet" href="../includes/style.css">
-    <link rel="icon" type="image/png" href="../includes/roadwatch.png">
+    <link rel="icon" type="image/png" href="../includes/RoadWatch.png">
 </head>
 <body>
     <main class="auth-page">

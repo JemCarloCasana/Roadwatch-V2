@@ -16,13 +16,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_close($stmt);
 
         if (!$user) {
+            unset($_SESSION['reset_verified'], $_SESSION['reset_verified_for']);
             $message = 'No active account found with that email address.';
         } elseif (!(int)$user['is_active']) {
+            unset($_SESSION['reset_verified'], $_SESSION['reset_verified_for']);
             $message = 'This account is currently inactive. Please contact administration.';
         } elseif (empty($user['security_question'])) {
+            unset($_SESSION['reset_verified'], $_SESSION['reset_verified_for']);
             $message = 'No recovery question is set for this account. Please contact an administrator.';
         } else {
-            $_SESSION['reset_user_id'] = $user['id'];
+            unset($_SESSION['reset_verified'], $_SESSION['reset_verified_for']);
+            $_SESSION['reset_user_id'] = (int) $user['id'];
             $_SESSION['reset_question'] = $user['security_question'];
             header('Location: security_question.php');
             exit;
@@ -37,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password - RoadWatch</title>
     <link rel="stylesheet" href="../includes/style.css">
-    <link rel="icon" type="image/png" href="../includes/roadwatch.png">
+    <link rel="icon" type="image/png" href="../includes/RoadWatch.png">
 </head>
 <body>
     <main class="auth-page">
