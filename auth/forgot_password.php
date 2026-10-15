@@ -2,6 +2,9 @@
 require_once '../includes/auth_guard.php';
 require_once '../includes/db.php';
 
+// Guest-only page: logged-in users (any role) go to their role home.
+require_guest();
+
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

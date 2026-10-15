@@ -31,6 +31,7 @@ if (isset($_SESSION['user_id'])) {
 }
 
 $message = "";
+$show_admin_hint = false;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!verify_csrf_token()) {
@@ -73,18 +74,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($user["role"] === "user") {
                     header("Location: " . citizen_home($conn, (int) $user["id"]));
                     exit;
-                } elseif ($user["role"] === "admin") {
-                    header("Location: ../admin/reports.php");
-                    exit;
-                } elseif ($user["role"] === "super_admin") {
-                    header("Location: ../superadmin/accounts.php");
-                    exit;
                 }
+                // NOTE: the citizen query above constrains role = 'user', so
+                // admin/super_admin branches here would be dead code by design.
             } else {
                 $message = "Your account is currently inactive. Please contact the administrator.";
             }
         } else {
             $message = "Invalid email address or password.";
+            // Citizen sign-in only accepts role='user' accounts; admins landing
+            // here (e.g. via bookmark) get a pointer to their own portal.
+            $show_admin_hint = true;
         }
     }
 }
@@ -127,6 +127,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             <?php if ($message): ?>
                 <div class="notice error" role="alert"><?php echo htmlspecialchars($message); ?></div>
+                <?php if ($show_admin_hint): ?>
+                    <div class="muted" style="font-size: 0.82rem; margin-top: 8px;">
+                        Are you an administrator? <a href="admin_login.php" style="font-weight: 700;">Sign in via the Admin Portal</a>.
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
 
             <form method="POST" data-loading="Signing in…">

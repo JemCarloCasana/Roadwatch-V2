@@ -11,6 +11,13 @@ if (!isset($_SESSION['reset_user_id'], $_SESSION['reset_verified'], $_SESSION['r
 
 $message = '';
 
+if (isset($_GET['cancel'])) {
+    unset($_SESSION['reset_user_id'], $_SESSION['reset_question'], $_SESSION['reset_verified'], $_SESSION['reset_verified_for']);
+    set_flash('info', 'Password reset cancelled.');
+    header('Location: login.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token()) {
         $message = 'Session expired. Please try again.';
@@ -78,6 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn-navy" style="width: 100%; margin-top: 8px;">
                     Update Password &amp; Sign In
                 </button>
+                <div style="text-align: center; margin-top: 12px;">
+                    <a href="reset_password.php?cancel=1" style="font-size: 0.85rem; font-weight: 600;">&larr; Cancel and back to Sign In</a>
+                </div>
             </form>
         </section>
     </main>

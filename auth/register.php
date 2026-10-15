@@ -2,6 +2,8 @@
 require_once '../includes/auth_guard.php';
 require_once '../includes/db.php';
 
+require_guest();
+
 $message = '';
 $full_name = trim($_POST['full_name'] ?? '');
 $email = trim($_POST['email'] ?? '');

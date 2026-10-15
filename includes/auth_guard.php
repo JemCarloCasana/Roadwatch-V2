@@ -114,6 +114,32 @@ function require_login(string $redirectPath = '../auth/login.php'): array {
     return $user;
 }
 
+/**
+ * Require guest (unauthenticated) access.
+ * Redirects already-logged-in users to their role home, mirroring the
+ * role-home mapping used by auth/login.php:
+ * super_admin -> superadmin console, admin -> admin console,
+ * citizen (role user) -> report journal. Guests fall through.
+ */
+function require_guest(): void {
+    if (!isset($_SESSION['user_id'])) {
+        return;
+    }
+    $role = $_SESSION['role'] ?? 'user';
+    // Callers live in auth/, so console paths are ../-prefixed; tolerate a
+    // future root-level caller by dropping the prefix outside auth/.
+    $in_auth = basename(dirname($_SERVER['SCRIPT_NAME'] ?? '')) === 'auth';
+    $prefix = $in_auth ? '../' : '';
+    if ($role === 'super_admin') {
+        header('Location: ' . $prefix . 'superadmin/accounts.php');
+    } elseif ($role === 'admin') {
+        header('Location: ' . $prefix . 'admin/reports.php');
+    } else {
+        header('Location: ' . $prefix . 'user/my_reports.php');
+    }
+    exit;
+}
+
 /* ==========================================================================
    Shared domain helpers (single source of truth; do not duplicate per-page)
    ========================================================================== */

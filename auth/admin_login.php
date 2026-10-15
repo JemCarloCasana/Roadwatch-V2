@@ -2,17 +2,8 @@
 require_once '../includes/auth_guard.php';
 require_once '../includes/db.php';
 
-// If already logged in as admin/super_admin, redirect
-if (isset($_SESSION['user_id'])) {
-    $role = $_SESSION['role'] ?? 'user';
-    if ($role === 'super_admin') {
-        header('Location: ../superadmin/accounts.php');
-        exit;
-    } elseif ($role === 'admin') {
-        header('Location: ../admin/reports.php');
-        exit;
-    }
-}
+// Guest-only page: logged-in users (any role) go to their role home.
+require_guest();
 
 $message = '';
 

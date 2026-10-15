@@ -352,7 +352,23 @@ require_once 'includes/header.php';
             </div>
 
             <div class="about-cta">
-                <a href="<?php echo isset($_SESSION['user_id']) ? 'user/submit_report.php' : 'auth/login.php'; ?>" class="btn-navy about-btn">
+            <?php
+            // Role-aware CTA: guests -> citizen sign-in, citizens -> report
+            // intake, admins/super_admins -> their own consoles (the citizen
+            // submit form would bounce them via its role guard).
+            $cta_href = 'auth/login.php';
+            if (isset($_SESSION['user_id'])) {
+                $cta_role = $_SESSION['role'] ?? 'user';
+                if ($cta_role === 'super_admin') {
+                    $cta_href = 'superadmin/accounts.php';
+                } elseif ($cta_role === 'admin') {
+                    $cta_href = 'admin/reports.php';
+                } else {
+                    $cta_href = 'user/submit_report.php';
+                }
+            }
+            ?>
+                <a href="<?php echo htmlspecialchars($cta_href); ?>" class="btn-navy about-btn">
                     Report a road hazard
                 </a>
             </div>
