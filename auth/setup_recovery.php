@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </svg>
                         </button>
                     </div>
-                    <span style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">Used only if you forget your password.</span>
+                    <span style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">Used only if you forget your password. Answers are case-sensitive; extra spaces around your answer are ignored.</span>
                 </div>
 
                 <button type="submit" class="btn-navy" style="width: 100%; margin-top: 8px; padding: 11px;">

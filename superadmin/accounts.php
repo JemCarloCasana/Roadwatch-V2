@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'] ?? '';
         if (empty($full_name) || empty($email) || empty($security_question) || empty($security_answer)) {
             $error = 'Please fill out all fields.';
+        } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $error = 'Please enter a valid email address.';
         } elseif (!in_array($security_question, recovery_questions(), true)) {
             $error = 'Please select a valid recovery question.';
         } elseif (strlen($password) < 8) {
@@ -31,14 +33,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt = mysqli_prepare(
                 $conn, 
-                "INSERT INTO users (full_name, email, password_hash, security_question, security_answer, role, created_by) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?)"
+                "INSERT INTO users (full_name, email, password_hash, security_question, security_answer, role, created_by, must_change_password) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, 1)"
             );
             mysqli_stmt_bind_param($stmt, 'ssssssi', $full_name, $email, $password_hash, $security_question, $security_answer_hash, $role, $created_by);
             
             if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_close($stmt);
-                set_flash('success', "Account for " . htmlspecialchars($full_name) . " ({$role}) created successfully.");
+                // Raw string: render_flash() escapes at display time, so no
+                // pre-escaping here (pre-escaping double-encodes the name).
+                set_flash('success', "Account for {$full_name} ({$role}) created successfully.");
                 header('Location: existing_accounts.php');
                 exit;
             } elseif (mysqli_errno($conn) === 1062) {
@@ -111,6 +115,7 @@ require_once '../includes/header.php';
             <div class="form-group">
                 <label for="security_answer">Security Recovery Answer *</label>
                 <input id="security_answer" type="text" name="security_answer" required autocomplete="off" value="<?php echo htmlspecialchars($security_answer); ?>">
+                <span style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">Answers are case-sensitive; extra spaces around the answer are ignored.</span>
             </div>
 
             <div class="actions" style="margin-top: 10px;">

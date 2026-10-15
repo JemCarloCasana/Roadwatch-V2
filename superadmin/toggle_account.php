@@ -48,7 +48,9 @@ $statusWord = $newStatus === 1 ? 'activated' : 'deactivated';
 $updateStmt = mysqli_prepare($conn, "UPDATE users SET is_active = ? WHERE id = ?");
 mysqli_stmt_bind_param($updateStmt, "ii", $newStatus, $account_id);
 if (mysqli_stmt_execute($updateStmt)) {
-    set_flash('success', "Account for " . htmlspecialchars($targetUser['full_name'], ENT_QUOTES, 'UTF-8') . " was successfully {$statusWord}.");
+    // Raw string: render_flash() escapes at display time, so no pre-escaping
+    // here (pre-escaping double-encodes the name).
+    set_flash('success', "Account for {$targetUser['full_name']} was successfully {$statusWord}.");
 } else {
     set_flash('error', "Failed to update account status.");
 }

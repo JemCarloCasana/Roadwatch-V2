@@ -6,14 +6,24 @@ $currentUser = require_role(['admin', 'super_admin'], '../auth/admin_login.php')
 
 $page = max(1, (int) ($_GET['page'] ?? 1));
 
-$count_result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM reports WHERE reports.status IN ('verified', 'rejected')");
+// Audit filter: verified / rejected / expired ('all' keeps every decided
+// report, including sunset-expired ones the queue no longer shows).
+$status_filter = $_GET['status'] ?? 'all';
+if (!in_array($status_filter, ['all', 'verified', 'rejected', 'expired'], true)) {
+    $status_filter = 'all';
+}
+$status_where = $status_filter === 'all'
+    ? "reports.status IN ('verified', 'rejected', 'expired')"
+    : "reports.status = '" . $status_filter . "'";
+
+$count_result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM reports WHERE {$status_where}");
 $total_history = (int) (mysqli_fetch_assoc($count_result)['total'] ?? 0);
 
 $total_pages = max(1, (int) ceil($total_history / ROADWATCH_PER_PAGE));
 $page = min($page, $total_pages);
 $offset = ($page - 1) * ROADWATCH_PER_PAGE;
 
-$id_result = mysqli_query($conn, "SELECT reports.id FROM reports WHERE reports.status IN ('verified', 'rejected') ORDER BY COALESCE(reports.verified_at, reports.submitted_at) DESC LIMIT " . ROADWATCH_PER_PAGE . " OFFSET {$offset}");
+$id_result = mysqli_query($conn, "SELECT reports.id FROM reports WHERE {$status_where} ORDER BY COALESCE(reports.verified_at, reports.submitted_at) DESC LIMIT " . ROADWATCH_PER_PAGE . " OFFSET {$offset}");
 $page_ids = [];
 while ($id_row = mysqli_fetch_assoc($id_result)) {
     $page_ids[] = (int) $id_row['id'];
@@ -55,15 +65,25 @@ require_once '../includes/header.php';
     <div class="panel-header">
         <div>
             <h1 class="panel-title">Hazard Audit History</h1>
-            <p class="panel-desc">Complete historical log of verified and rejected road conditions in Dagupan City.</p>
+            <p class="panel-desc">Complete historical log of verified, rejected, and expired road conditions in Dagupan City.</p>
         </div>
         <a class="btn-secondary btn-sm" href="reports.php">&larr; Back to Pending Queue</a>
     </div>
 
+    <form method="GET" style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
+        <label for="status" class="muted" style="font-size: 0.82rem; font-weight: 600;">Show:</label>
+        <select id="status" name="status" onchange="this.form.submit()" style="max-width: 220px;">
+            <option value="all" <?php echo $status_filter === 'all' ? 'selected' : ''; ?>>All decided (verified + rejected + expired)</option>
+            <option value="verified" <?php echo $status_filter === 'verified' ? 'selected' : ''; ?>>Verified only</option>
+            <option value="rejected" <?php echo $status_filter === 'rejected' ? 'selected' : ''; ?>>Rejected only</option>
+            <option value="expired" <?php echo $status_filter === 'expired' ? 'selected' : ''; ?>>Expired only</option>
+        </select>
+    </form>
+
     <?php if ($total_history === 0): ?>
         <div class="panel empty-state">
             <h3 style="margin-bottom: 6px;">No reviewed reports yet</h3>
-            <p class="feed-empty-text" style="margin-bottom: 18px;">Verified and rejected reports will appear here once admins work through the queue.</p>
+            <p class="feed-empty-text" style="margin-bottom: 18px;">Verified, rejected, and expired reports will appear here once admins work through the queue.</p>
             <a class="btn-secondary" href="reports.php">Back to Pending Queue</a>
         </div>
     <?php else: ?>
@@ -89,7 +109,7 @@ require_once '../includes/header.php';
                             <td>
                                 <div><strong><a href="review.php?id=<?php echo $r['id']; ?>&from=history"><?php echo htmlspecialchars($r['road_name']); ?></a></strong></div>
                                 <div class="muted" style="font-size: 0.8rem;"><?php echo htmlspecialchars($r['barangay_name']); ?></div>
-                                <div style="font-size: 0.76rem; color: #64748b; margin-top: 2px;">By: <?php echo htmlspecialchars($r['full_name']); ?></div>
+                                <div class="mt-[2px] text-[0.76rem] text-mist">By: <?php echo htmlspecialchars($r['full_name']); ?></div>
                                 <?php if (!empty($r['latitude']) && !empty($r['longitude'])): ?>
                                     <a href="https://www.google.com/maps?q=<?php echo $r['latitude']; ?>,<?php echo $r['longitude']; ?>" target="_blank" rel="noopener noreferrer" style="font-size: 0.76rem;">
                                         Map
@@ -185,7 +205,7 @@ require_once '../includes/header.php';
             <?php endforeach; ?>
         </div>
 
-        <?php echo render_pager($total_history, $page, []); ?>
+        <?php echo render_pager($total_history, $page, $status_filter === 'all' ? [] : ['status' => $status_filter]); ?>
     <?php endif; ?>
 </div>
 

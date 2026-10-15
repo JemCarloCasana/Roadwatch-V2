@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $email = trim($_POST["email"] ?? '');
         $password = $_POST["password"] ?? '';
 
-        $sql = "SELECT id, full_name, email, password_hash, role, is_active, security_question
+        $sql = "SELECT id, full_name, email, password_hash, role, is_active, security_question, must_change_password
                 FROM users
                 WHERE email = ? AND role = 'user'
                 LIMIT 1";
@@ -55,6 +55,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if ($user && password_verify($password, $user["password_hash"])) {
             if ((int) $user["is_active"] === 1) {
+                if ((int) ($user["must_change_password"] ?? 0) === 1) {
+                    // Provisioned/seeded password still in use: hold a pending
+                    // id only — grant NO session — until rotation completes.
+                    session_regenerate_id(true);
+                    unset($_SESSION["user_id"], $_SESSION["role"], $_SESSION["full_name"]);
+                    $_SESSION["pending_password_user_id"] = (int) $user["id"];
+                    set_flash('warning', 'For your security, please set a new password before continuing.');
+                    header("Location: change_password.php");
+                    exit;
+                }
                 if (empty($user["security_question"])) {
                     // NULL cohort (created while Q&A fields were removed):
                     // hold a pending id only — grant NO session — until Q&A setup completes.
@@ -155,10 +165,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin: 2px 0 6px;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 0.85rem; cursor: pointer;">
-                        <input type="checkbox" name="remember_me"> Remember me
-                    </label>
+                <!-- Remember-me is deliberately NOT offered: there is no
+                     persistent-login token store, so a checkbox would imply a
+                     "keep me signed in" promise the server never honors.
+                     Sessions end with the browser session by design. -->
+                <div style="display: flex; justify-content: flex-end; align-items: center; margin: 2px 0 6px;">
                     <a href="forgot_password.php" style="font-size: 0.82rem; font-weight: 600;">Forgot password?</a>
                 </div>
 

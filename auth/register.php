@@ -20,6 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($full_name === '' || $email === '') {
             $message = 'Please complete all required fields.';
+        } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $message = 'Please enter a valid email address.';
         } elseif (!in_array($security_question, recovery_questions(), true)) {
             $message = 'Please select a valid recovery question.';
         } elseif ($security_answer === '') {
@@ -33,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $security_answer_hash = password_hash($security_answer, PASSWORD_DEFAULT);
             $role = 'user';
 
-            $sql = "INSERT INTO users (full_name, email, password_hash, security_question, security_answer, role) VALUES (?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO users (full_name, email, password_hash, security_question, security_answer, role, must_change_password) VALUES (?, ?, ?, ?, ?, ?, 0)";
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, 'ssssss', $full_name, $email, $password_hash, $security_question, $security_answer_hash, $role);
 
@@ -146,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </svg>
                         </button>
                     </div>
-                    <span style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">Used only if you forget your password.</span>
+                    <span style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">Used only if you forget your password. Answers are case-sensitive; extra spaces around your answer are ignored.</span>
                 </div>
 
                 <button type="submit" class="btn-navy" style="width: 100%; margin-top: 8px; padding: 11px;">

@@ -117,6 +117,14 @@ a:hover {
     color: inherit;
 }
 
+.brand-mark-img {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
 .brand-mark {
     display: grid;
     place-items: center;
@@ -1051,6 +1059,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     margin-top: 14px;
 }
 
+/* Chip row inside hero controls has no bottom gap (hero padding owns it).
+ * A utility can't do this: .filter-chip-row's unlayered margin wins. */
+.hero-controls .filter-chip-row {
+    margin-bottom: 0;
+}
+
 .view-switcher {
     display: flex;
     background: var(--line-subtle);
@@ -1198,7 +1212,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     color: var(--impassable-ink);
 }
 
-.pill-info {
+.pill-info,
+.badge.expired {
     background: var(--brand-blue-soft);
     border-color: var(--brand-blue);
     color: var(--brand-navy);

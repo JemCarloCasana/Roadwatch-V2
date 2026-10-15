@@ -32,8 +32,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
             $user_id = (int) $_SESSION['reset_user_id'];
-            
-            $stmt = mysqli_prepare($conn, 'UPDATE users SET password_hash = ? WHERE id = ?');
+
+            // Re-check active status mid-flow: an account deactivated after
+            // verification must not complete a password reset.
+            $chk = mysqli_prepare($conn, 'SELECT is_active FROM users WHERE id = ? LIMIT 1');
+            mysqli_stmt_bind_param($chk, 'i', $user_id);
+            mysqli_stmt_execute($chk);
+            $fresh = mysqli_fetch_assoc(mysqli_stmt_get_result($chk));
+            mysqli_stmt_close($chk);
+
+            if (!$fresh || (int) $fresh['is_active'] !== 1) {
+                unset($_SESSION['reset_user_id'], $_SESSION['reset_question'], $_SESSION['reset_verified'], $_SESSION['reset_verified_for']);
+                set_flash('error', 'This account is currently inactive. Please contact administration.');
+                header('Location: login.php');
+                exit;
+            }
+
+            // A self-chosen password needs no forced rotation.
+            $stmt = mysqli_prepare($conn, 'UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?');
             mysqli_stmt_bind_param($stmt, 'si', $password_hash, $user_id);
 
             if (mysqli_stmt_execute($stmt)) {

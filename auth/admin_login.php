@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
 
-        $sql = "SELECT id, full_name, password_hash, role, is_active
+        $sql = "SELECT id, full_name, password_hash, role, is_active, must_change_password
                 FROM users 
                 WHERE email = ? AND role IN ('admin', 'super_admin') 
                 LIMIT 1";
@@ -26,6 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($password, $user['password_hash'])) {
             if ((int) $user['is_active'] === 1) {
+                if ((int) ($user['must_change_password'] ?? 0) === 1) {
+                    // Provisioned/seeded password still in use: hold a pending
+                    // id only — grant NO session — until rotation completes.
+                    session_regenerate_id(true);
+                    unset($_SESSION['user_id'], $_SESSION['role'], $_SESSION['full_name']);
+                    $_SESSION['pending_password_user_id'] = (int) $user['id'];
+                    set_flash('warning', 'For your security, please set a new password before continuing.');
+                    header('Location: change_password.php');
+                    exit;
+                }
                 session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['full_name'] = $user['full_name'];
@@ -48,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - RoadWatch Dagupan</title>
     <link rel="stylesheet" href="../includes/style.css">
-    <link rel="icon" type="image/png" href="../includes/roadwatch.png">
+    <link rel="icon" type="image/png" href="../includes/RoadWatch.png">
 </head>
 <body>
     <main class="auth-page">
@@ -59,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="auth-banner-box">
                 <div class="brand-lockup">
-                    <span class="brand-mark">RW</span>
+                    <img src="../includes/RoadWatch.png" alt="RoadWatch logo" class="brand-mark-img" width="36" height="36">
                     <div>
                         <div class="brand-title">ROADWATCH DAGUPAN</div>
                         <div class="brand-subtitle">Community road hazard reporting for Dagupan City</div>

@@ -16,11 +16,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $answer = trim($_POST['security_answer'] ?? '');
         $user_id = (int) $_SESSION['reset_user_id'];
         
-        $stmt = mysqli_prepare($conn, 'SELECT security_answer FROM users WHERE id = ?');
+        $stmt = mysqli_prepare($conn, 'SELECT security_answer, is_active FROM users WHERE id = ? LIMIT 1');
         mysqli_stmt_bind_param($stmt, 'i', $user_id);
         mysqli_stmt_execute($stmt);
         $user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
         mysqli_stmt_close($stmt);
+
+        if (!$user || (int) $user['is_active'] !== 1) {
+            // Deactivated after the forgot-password lookup: abandon the reset
+            // session so a stale verified flow can never complete.
+            unset($_SESSION['reset_user_id'], $_SESSION['reset_question'], $_SESSION['reset_verified'], $_SESSION['reset_verified_for']);
+            set_flash('error', 'This account is currently inactive. Please contact administration.');
+            header('Location: forgot_password.php');
+            exit;
+        }
 
         $stored_answer = $user['security_answer'] ?? '';
         if ($user && $stored_answer !== '' && password_verify($answer, $stored_answer)) {
@@ -66,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="security_answer">Your Answer</label>
                     <input id="security_answer" type="text" name="security_answer" required autocomplete="off" autofocus placeholder="Type your answer...">
+                    <span style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">Answers are case-sensitive; extra spaces around your answer are ignored.</span>
                 </div>
 
                 <button type="submit" class="btn-navy" style="width: 100%; margin-top: 8px;">

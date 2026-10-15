@@ -29,6 +29,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($hazard_type_id <= 0) {
             $field_errors['hazard'] = 'Pick the situation that best describes the road issue.';
         }
+        // Referential check: the chosen ids must still exist, so a stale or
+        // tampered form reports the exact field instead of a generic failure.
+        if (!isset($field_errors['barangay_id'])) {
+            $bchk = mysqli_prepare($conn, 'SELECT id FROM barangays WHERE id = ? LIMIT 1');
+            mysqli_stmt_bind_param($bchk, 'i', $barangay_id);
+            mysqli_stmt_execute($bchk);
+            $brow = mysqli_fetch_assoc(mysqli_stmt_get_result($bchk));
+            mysqli_stmt_close($bchk);
+            if (!$brow) {
+                $field_errors['barangay_id'] = 'The selected barangay is no longer available. Please choose again.';
+            }
+        }
+        if (!isset($field_errors['hazard'])) {
+            $hchk = mysqli_prepare($conn, 'SELECT id FROM hazard_types WHERE id = ? LIMIT 1');
+            mysqli_stmt_bind_param($hchk, 'i', $hazard_type_id);
+            mysqli_stmt_execute($hchk);
+            $hrow = mysqli_fetch_assoc(mysqli_stmt_get_result($hchk));
+            mysqli_stmt_close($hchk);
+            if (!$hrow) {
+                $field_errors['hazard'] = 'The selected hazard category is no longer available. Please pick again.';
+            }
+        }
         if (empty($description)) {
             $field_errors['description'] = 'Describe what vehicles can or cannot pass.';
         }
@@ -64,16 +86,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "INSERT INTO reports (user_id, barangay_id, hazard_type_id, road_name, landmark, latitude, longitude, description, status) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')"
             );
+            // Coords bind as 's' with NULL passthrough: binding PHP null to 'd'
+            // would coerce to 0, storing a false Gulf-of-Guinea pin. With 's',
+            // a pin-less report stores NULL latitude/longitude as intended.
+            $lat_param = $latitude === null ? null : (string) $latitude;
+            $lng_param = $longitude === null ? null : (string) $longitude;
             mysqli_stmt_bind_param(
                 $stmt, 
-                'iiissdds', 
+                'iiisssss', 
                 $user_id, 
                 $barangay_id, 
                 $hazard_type_id, 
                 $road_name, 
                 $full_landmark, 
-                $latitude, 
-                $longitude, 
+                $lat_param, 
+                $lng_param, 
                 $description
             );
 
@@ -324,7 +351,7 @@ require_once '../includes/header.php';
 
                 <!-- Mockup Photo Upload Tile -->
                 <div id="field-photo" style="background: var(--line-subtle); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 20px; display: flex; align-items: center; gap: 20px;">
-                    <div id="photo-placeholder-box" style="width: 80px; height: 80px; border: 1px dashed #cbd5e1; border-radius: var(--radius-sm); display: grid; place-items: center; background: #fff; flex-shrink: 0; color: var(--muted-light); font-size: 0.75rem; text-align: center; font-weight: 700;">
+                    <div id="photo-placeholder-box" class="grid size-20 shrink-0 place-items-center rounded-md border border-dashed border-[#cbd5e1] bg-paper text-center text-xs font-bold text-[#94a3b8]">
                         <div>
                             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin: 0 auto 2px;">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -381,7 +408,7 @@ require_once '../includes/header.php';
 
     <!-- Bottom Verification & Emergency Banners from Mockup -->
     <div class="banner-grid">
-        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 16px; display: flex; gap: 12px; align-items: flex-start;">
+        <div class="flex items-start gap-3 rounded-md border border-line bg-paper p-4">
             <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: var(--brand-navy); flex-shrink: 0; margin-top: 2px;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
@@ -391,7 +418,7 @@ require_once '../includes/header.php';
             </div>
         </div>
 
-        <div style="background: #ffffff; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 16px; display: flex; gap: 12px; align-items: flex-start;">
+        <div class="flex items-start gap-3 rounded-md border border-line bg-paper p-4">
             <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: var(--impassable-red); flex-shrink: 0; margin-top: 2px;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
             </svg>
